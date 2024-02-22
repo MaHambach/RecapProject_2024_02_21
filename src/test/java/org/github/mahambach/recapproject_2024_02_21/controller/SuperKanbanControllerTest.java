@@ -31,9 +31,6 @@ class SuperKanbanControllerTest {
     @MockBean
     private SuperKanbanService superKanbanService;
 
-    @MockBean
-    private ChatGptService chatGptService;
-
     @Test
     void getAllToDos_whenEmpty_thenEmpty() throws Exception {
         // When & Then
@@ -44,7 +41,6 @@ class SuperKanbanControllerTest {
                         """));
         verify(superKanbanService, times(1)).getAllToDos();
         verifyNoMoreInteractions(superKanbanService);
-        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -80,7 +76,6 @@ class SuperKanbanControllerTest {
                         """));
         verify(superKanbanService, times(1)).getAllToDos();
         verifyNoMoreInteractions(superKanbanService);
-        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -100,7 +95,6 @@ class SuperKanbanControllerTest {
                         """));
         verify(superKanbanService, times(1)).getToDoById("1");
         verifyNoMoreInteractions(superKanbanService);
-        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -119,14 +113,12 @@ class SuperKanbanControllerTest {
                         """));
         verify(superKanbanService, times(1)).getToDoById("2");
         verifyNoMoreInteractions(superKanbanService);
-        verifyNoInteractions(chatGptService);
     }
 
     @Test
     void createToDo_whenChatGptAnswers_thenDo() throws Exception {
         // Given
-        when(chatGptService.spellCheck("description1")).thenReturn("description 1");
-        when(superKanbanService.createToDo(new SuperKanbanToDoDTO("description 1", "OPEN")))
+        when(superKanbanService.createToDo(new SuperKanbanToDoDTO("description1", "OPEN")))
                 .thenReturn(new SuperKanbanToDo("1", "description 1", "OPEN"));
         // When & Then
         mvc.perform(MockMvcRequestBuilders.post("/api/todo")
@@ -146,15 +138,14 @@ class SuperKanbanControllerTest {
                         }
                         """
                 ));
-        verify(chatGptService, times(1)).spellCheck("description1");
-        verify(superKanbanService, times(1)).createToDo(new SuperKanbanToDoDTO("description 1", "OPEN"));
-        verifyNoMoreInteractions(chatGptService, superKanbanService);
+        verify(superKanbanService, times(1)).createToDo(new SuperKanbanToDoDTO("description1", "OPEN"));
+        verifyNoInteractions(superKanbanService);
     }
 
     @Test
-    void creatToDo_whenChatGptDoesNotAnswer_thenThrow() throws Exception {
+    void createToDo_whenChatGptDoesNotAnswer_thenThrow() throws Exception {
         // Given
-        when(chatGptService.spellCheck("description1")).thenThrow(new NoChatGptResponse("Error: No response given by ChatGPT."));
+        when(superKanbanService.createToDo(new SuperKanbanToDoDTO("description1", "OPEN"))).thenThrow(new NoChatGptResponse("Error: No response given by ChatGPT."));
         // When & Then
         mvc.perform(MockMvcRequestBuilders.post("/api/todo")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -173,8 +164,7 @@ class SuperKanbanControllerTest {
                         }
                         """
                 ));
-        verify(chatGptService, times(1)).spellCheck("description1");
-        verifyNoMoreInteractions(chatGptService);
+        verify(superKanbanService, times(1)).createToDo(new SuperKanbanToDoDTO("description1", "OPEN"));
         verifyNoInteractions(superKanbanService);
     }
 
@@ -204,7 +194,6 @@ class SuperKanbanControllerTest {
                 ));
         verify(superKanbanService, times(1)).updateToDo("1", new SuperKanbanToDo("1", "currywurst", "OPEN"));
         verifyNoMoreInteractions(superKanbanService);
-        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -233,7 +222,6 @@ class SuperKanbanControllerTest {
                 ));
         verify(superKanbanService, times(1)).updateToDo("1", new SuperKanbanToDo("2", "currywurst", "OPEN"));
         verifyNoMoreInteractions(superKanbanService);
-        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -262,7 +250,6 @@ class SuperKanbanControllerTest {
                 ));
         verify(superKanbanService, times(1)).updateToDo("1", new SuperKanbanToDo("2", "currywurst", "OPEN"));
         verifyNoMoreInteractions(superKanbanService);
-        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -282,7 +269,6 @@ class SuperKanbanControllerTest {
                 ));
         verify(superKanbanService, times(1)).deleteToDo("1");
         verifyNoMoreInteractions(superKanbanService);
-        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -302,6 +288,5 @@ class SuperKanbanControllerTest {
                 ));
         verify(superKanbanService, times(1)).deleteToDo("2");
         verifyNoMoreInteractions(superKanbanService);
-        verifyNoInteractions(chatGptService);
     }
 }
