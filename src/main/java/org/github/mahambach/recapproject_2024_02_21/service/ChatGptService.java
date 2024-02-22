@@ -29,8 +29,8 @@ public class ChatGptService {
                 .body(request)
                 .retrieve()
                 .body(ChatGptResponse.class);
-        if(response == null){throw new NoChatGptResponse("Error: No response given.");}
-        if(response.getAnswer() == null){throw new NoChatGptResponse("Error: No answer given.");}
+        if(response == null){throw new NoChatGptResponse("Error: No response given by ChatGPT.");}
+        if(response.getAnswer() == null){throw new NoChatGptResponse("Error: No response given by ChatGPT.");}
         return response.getAnswer();
     }
 }

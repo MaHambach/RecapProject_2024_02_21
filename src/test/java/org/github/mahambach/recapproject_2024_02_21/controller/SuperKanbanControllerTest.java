@@ -1,5 +1,6 @@
 package org.github.mahambach.recapproject_2024_02_21.controller;
 
+import org.github.mahambach.recapproject_2024_02_21.exception.NoChatGptResponse;
 import org.github.mahambach.recapproject_2024_02_21.exception.NoSuchToDoFound;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDo;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoDTO;
@@ -22,8 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -46,6 +46,9 @@ class SuperKanbanControllerTest {
                 .andExpect(MockMvcResultMatchers.content().json("""
                         []
                         """));
+        verify(superKanbanService, times(1)).getAllToDos();
+        verifyNoMoreInteractions(superKanbanService);
+        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -79,6 +82,9 @@ class SuperKanbanControllerTest {
                             }
                         ]
                         """));
+        verify(superKanbanService, times(1)).getAllToDos();
+        verifyNoMoreInteractions(superKanbanService);
+        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -96,6 +102,9 @@ class SuperKanbanControllerTest {
                             "status":"OPEN"
                         }
                         """));
+        verify(superKanbanService, times(1)).getToDoById("1");
+        verifyNoMoreInteractions(superKanbanService);
+        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -112,13 +121,17 @@ class SuperKanbanControllerTest {
                             "errorMsg": "No ToDo with id '2' found."
                         }
                         """));
+        verify(superKanbanService, times(1)).getToDoById("2");
+        verifyNoMoreInteractions(superKanbanService);
+        verifyNoInteractions(chatGptService);
     }
 
     @Test
-    void createToDo() throws Exception {
+    void createToDo_whenChatGptAnswers_thenDo() throws Exception {
         // Given
-        when(superKanbanService.createToDo(new SuperKanbanToDoDTO("description1", "OPEN")))
-                .thenReturn(new SuperKanbanToDo("1", "description1", "OPEN"));
+        when(chatGptService.spellCheck("description1")).thenReturn("description 1");
+        when(superKanbanService.createToDo(new SuperKanbanToDoDTO("description 1", "OPEN")))
+                .thenReturn(new SuperKanbanToDo("1", "description 1", "OPEN"));
         // When & Then
         mvc.perform(MockMvcRequestBuilders.post("/api/todo")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -132,11 +145,41 @@ class SuperKanbanControllerTest {
                 .andExpect(MockMvcResultMatchers.content().json("""
                         {
                             "id": "1",
-                            "description": "description1",
+                            "description": "description 1",
                             "status": "OPEN"
                         }
                         """
                 ));
+        verify(chatGptService, times(1)).spellCheck("description1");
+        verify(superKanbanService, times(1)).createToDo(new SuperKanbanToDoDTO("description 1", "OPEN"));
+        verifyNoMoreInteractions(chatGptService, superKanbanService);
+    }
+
+    @Test
+    void creatToDo_whenChatGptDoesNotAnswer_thenThrow() throws Exception {
+        // Given
+        when(chatGptService.spellCheck("description1")).thenThrow(new NoChatGptResponse("Error: No response given by ChatGPT."));
+        // When & Then
+        mvc.perform(MockMvcRequestBuilders.post("/api/todo")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                {
+                    "description":"description1",
+                    "status":"OPEN"
+                }
+                """))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().json("""
+                        {
+                            "apiPath": "uri=/api/todo",
+                            "errorCode": "BAD_REQUEST",
+                            "errorMsg": "Error: No response given by ChatGPT."
+                        }
+                        """
+                ));
+        verify(chatGptService, times(1)).spellCheck("description1");
+        verifyNoMoreInteractions(chatGptService);
+        verifyNoInteractions(superKanbanService);
     }
 
     @Test
@@ -163,6 +206,9 @@ class SuperKanbanControllerTest {
                         }
                         """
                 ));
+        verify(superKanbanService, times(1)).updateToDo("1", new SuperKanbanToDo("1", "currywurst", "OPEN"));
+        verifyNoMoreInteractions(superKanbanService);
+        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -189,6 +235,9 @@ class SuperKanbanControllerTest {
                         }
                         """
                 ));
+        verify(superKanbanService, times(1)).updateToDo("1", new SuperKanbanToDo("2", "currywurst", "OPEN"));
+        verifyNoMoreInteractions(superKanbanService);
+        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -215,6 +264,9 @@ class SuperKanbanControllerTest {
                         }
                         """
                 ));
+        verify(superKanbanService, times(1)).updateToDo("1", new SuperKanbanToDo("2", "currywurst", "OPEN"));
+        verifyNoMoreInteractions(superKanbanService);
+        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -232,6 +284,9 @@ class SuperKanbanControllerTest {
                         }
                         """
                 ));
+        verify(superKanbanService, times(1)).deleteToDo("1");
+        verifyNoMoreInteractions(superKanbanService);
+        verifyNoInteractions(chatGptService);
     }
 
     @Test
@@ -249,5 +304,8 @@ class SuperKanbanControllerTest {
                         }
                         """
                 ));
+        verify(superKanbanService, times(1)).deleteToDo("2");
+        verifyNoMoreInteractions(superKanbanService);
+        verifyNoInteractions(chatGptService);
     }
 }
