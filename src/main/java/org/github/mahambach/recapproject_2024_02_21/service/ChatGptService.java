@@ -24,7 +24,7 @@ public class ChatGptService {
         return postPrompt(request);
     }
 
-    private String postPrompt(ChatGptRequest request){
+    String postPrompt(ChatGptRequest request){
         ChatGptResponse response = client.post()
                 .body(request)
                 .retrieve()

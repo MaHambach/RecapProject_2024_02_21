@@ -4,9 +4,7 @@ import org.github.mahambach.recapproject_2024_02_21.exception.NoChatGptResponse;
 import org.github.mahambach.recapproject_2024_02_21.exception.NoSuchToDoFound;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDo;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoDTO;
-import org.github.mahambach.recapproject_2024_02_21.repositories.SuperKanbanRepo;
 import org.github.mahambach.recapproject_2024_02_21.service.ChatGptService;
-import org.github.mahambach.recapproject_2024_02_21.service.IdService;
 import org.github.mahambach.recapproject_2024_02_21.service.SuperKanbanService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
