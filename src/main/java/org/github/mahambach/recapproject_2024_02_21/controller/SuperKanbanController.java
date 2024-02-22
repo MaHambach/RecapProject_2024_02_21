@@ -3,11 +3,11 @@ package org.github.mahambach.recapproject_2024_02_21.controller;
 import lombok.RequiredArgsConstructor;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDo;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoDTO;
+import org.github.mahambach.recapproject_2024_02_21.service.ChatGptService;
 import org.github.mahambach.recapproject_2024_02_21.service.SuperKanbanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,6 +16,7 @@ import java.util.List;
 public class SuperKanbanController {
 
     private final SuperKanbanService superKanbanService;
+    private final ChatGptService chatGptService;
     @GetMapping("/todo")
     public List<SuperKanbanToDo> getAllToDos(){
          return superKanbanService.getAllToDos();
@@ -29,12 +30,12 @@ public class SuperKanbanController {
     @PostMapping("/todo")
     @ResponseStatus(HttpStatus.CREATED)
         public SuperKanbanToDo createToDo(@RequestBody SuperKanbanToDoDTO toDoDTO){
-        return superKanbanService.createToDo(toDoDTO);
+        return superKanbanService.createToDo(toDoDTO.withDescription(chatGptService.spellCheck(toDoDTO.getDescription())));
     }
 
     @PutMapping("/todo/{id}")
     public SuperKanbanToDo updateToDo(@PathVariable String id, @RequestBody SuperKanbanToDo toDo){
-        return superKanbanService.updateToDo(id, toDo);
+        return superKanbanService.updateToDo(id, toDo); //Bewusste Entscheidung gegen einen Rechtschreib- und Grammatik-Check durch ChatGPT um den Benutzer die Möglichkeit zu geben Fehler von ChatGPT zu korrigieren.
     }
 
     @DeleteMapping("/todo/{id}")

@@ -4,6 +4,7 @@ import org.github.mahambach.recapproject_2024_02_21.exception.NoSuchToDoFound;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDo;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoDTO;
 import org.github.mahambach.recapproject_2024_02_21.repositories.SuperKanbanRepo;
+import org.github.mahambach.recapproject_2024_02_21.service.ChatGptService;
 import org.github.mahambach.recapproject_2024_02_21.service.IdService;
 import org.github.mahambach.recapproject_2024_02_21.service.SuperKanbanService;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,9 @@ class SuperKanbanControllerTest {
 
     @MockBean
     private SuperKanbanService superKanbanService;
+
+    @MockBean
+    private ChatGptService chatGptService;
 
     @Test
     void getAllToDos_whenEmpty_thenEmpty() throws Exception {
