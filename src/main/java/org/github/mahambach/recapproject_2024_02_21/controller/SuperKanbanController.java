@@ -16,7 +16,7 @@ import java.util.List;
 public class SuperKanbanController {
 
     private final SuperKanbanService superKanbanService;
-    private final ChatGptService chatGptService;
+    private final ChatGptService chatGptService; //TODO: Move this to SuperKanbanService.
     @GetMapping("/todo")
     public List<SuperKanbanToDo> getAllToDos(){
          return superKanbanService.getAllToDos();
