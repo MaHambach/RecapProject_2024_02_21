@@ -4,25 +4,18 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.github.mahambach.recapproject_2024_02_21.exception.NoChatGptResponse;
 import org.github.mahambach.recapproject_2024_02_21.model.ChatGptRequest;
-import org.github.mahambach.recapproject_2024_02_21.model.ChatGptResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -113,7 +106,6 @@ class ChatGptServiceTest {
                         """)
                 .addHeader("Content-Type", "application/json")
         );
-        String expected = "Brain";
         ChatGptRequest chatGptRequest = new ChatGptRequest("prompt");
 
         // When & Then
@@ -127,7 +119,6 @@ class ChatGptServiceTest {
         mockWebServer.enqueue(new MockResponse()
                 .addHeader("Content-Type", "application/json")
         );
-        String expected = "Brain";
         ChatGptRequest chatGptRequest = new ChatGptRequest("prompt");
 
         // When & Then
