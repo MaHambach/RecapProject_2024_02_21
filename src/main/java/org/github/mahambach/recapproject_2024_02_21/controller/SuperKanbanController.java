@@ -33,11 +33,21 @@ public class SuperKanbanController {
 
     @PutMapping("/todo/{id}")
     public SuperKanbanToDo updateToDo(@PathVariable String id, @RequestBody SuperKanbanToDo toDo){
-        return superKanbanService.updateToDo(id, toDo); //Bewusste Entscheidung gegen einen Rechtschreib- und Grammatik-Check durch ChatGPT um den Benutzer die Möglichkeit zu geben Fehler von ChatGPT zu korrigieren.
+        return superKanbanService.updateToDo(id, toDo);
     }
 
     @DeleteMapping("/todo/{id}")
     public SuperKanbanToDo deleteToDo(@PathVariable String id){
         return superKanbanService.deleteToDo(id);
+    }
+
+    @PostMapping("/undo")
+    public SuperKanbanToDo undo(){
+        return superKanbanService.undo();
+    }
+
+    @PostMapping("/redo")
+    public SuperKanbanToDo redo(){
+        return superKanbanService.redo();
     }
 }

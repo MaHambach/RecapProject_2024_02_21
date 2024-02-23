@@ -13,7 +13,6 @@ import java.util.List;
 public class SuperKanbanService {
     private final SuperKanbanRepo superKanbanRepo;
     private final ChatGptService chatGptService;
-
     private final IdService idService;
 
     public List<SuperKanbanToDo> getAllToDos() {
@@ -29,7 +28,7 @@ public class SuperKanbanService {
     }
 
     public SuperKanbanToDo updateToDo(String id, SuperKanbanToDo toDo) {
-        return this.superKanbanRepo.updateToDo(id, toDo);
+        return this.superKanbanRepo.updateToDo(id, toDo); //Bewusste Entscheidung gegen einen Rechtschreib- und Grammatik-Check durch ChatGPT um den Benutzer die Möglichkeit zu geben Fehler von ChatGPT zu korrigieren.
     }
 
     public SuperKanbanToDo deleteToDo(String id) {
@@ -37,4 +36,11 @@ public class SuperKanbanService {
     }
 
 
+    public SuperKanbanToDo undo() {
+        return this.superKanbanRepo.undo();
+    }
+
+    public SuperKanbanToDo redo() {
+        return this.superKanbanRepo.redo();
+    }
 }

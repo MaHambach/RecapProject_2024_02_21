@@ -13,4 +13,14 @@ public class SuperKanbanToDo {
     private String id;
     private String description;
     private String status;
+
+    public SuperKanbanToDoMemento saveStateMemento(OperationEvent operationEvent) {
+        return new SuperKanbanToDoMemento(operationEvent, this.id, this.description, this.status);
+    }
+
+    public void restoreStateMemento(SuperKanbanToDoMemento memento) {
+        this.id = memento.id();
+        this.description = memento.description();
+        this.status = memento.status();
+    }
 }

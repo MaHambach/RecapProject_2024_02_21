@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class SuperKanbanServiceTest {
     private final SuperKanbanRepo mockSuperKanbanRepo = mock(SuperKanbanRepo.class);
     private final IdService mockIdService = mock(IdService.class);
-
     private final ChatGptService mockChatGptService = mock(ChatGptService.class);
 
     @Test
