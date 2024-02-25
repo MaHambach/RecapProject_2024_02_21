@@ -20,6 +20,7 @@ public class SuperKanbanService {
     private final CareTakerService careTakerService;
 
     public List<SuperKanbanToDo> getAllToDos() {
+
         return this.superKanbanRepo.findAll();
     }
 
@@ -29,18 +30,24 @@ public class SuperKanbanService {
 
     public SuperKanbanToDo createToDo(SuperKanbanToDoDTO toDoDTO) {
         //return this.superKanbanRepo.createToDo(new SuperKanbanToDo(idService.generateId(), chatGptService.spellCheck(toDoDTO.getDescription()), toDoDTO.getStatus()));  // Entfernt, da es in Zukunft, wenn der Key nicht länger funktioniert, probleme geben könnte.
-        return this.superKanbanRepo.save(new SuperKanbanToDo(idService.generateId(), toDoDTO.getDescription(), toDoDTO.getStatus()));
+        SuperKanbanToDo toDo = new SuperKanbanToDo(idService.generateId(), toDoDTO.getDescription(), toDoDTO.getStatus());
+        this.careTakerService.add(toDo.saveStateMemento(OperationEvent.CREATE));
+        return this.superKanbanRepo.save(toDo);
     }
 
     public SuperKanbanToDo updateToDo(String id, SuperKanbanToDo toDo) {
+        SuperKanbanToDo oldToDo = this.superKanbanRepo.findById(id).orElseThrow(() -> new NoSuchToDoFound(id));
         if(!id.equals(toDo.getId())) {
             throw new IllegalArgumentException("The id in the path and the id in the body do not match.");
         }
+        this.careTakerService.add(oldToDo.saveStateMemento(OperationEvent.UPDATE));
+        this.careTakerService.add(toDo.saveStateMemento(OperationEvent.UPDATE));
         return this.superKanbanRepo.save(toDo); //Bewusste Entscheidung gegen einen Rechtschreib- und Grammatik-Check durch ChatGPT um den Benutzer die Möglichkeit zu geben Fehler von ChatGPT zu korrigieren.
     }
 
     public SuperKanbanToDo deleteToDo(String id) {
         SuperKanbanToDo toDo = this.superKanbanRepo.findById(id).orElseThrow(() -> new NoSuchToDoFound(id));
+        this.careTakerService.add(toDo.saveStateMemento(OperationEvent.DELETE));
         this.superKanbanRepo.deleteById(id);
         return toDo;
     }
@@ -52,7 +59,6 @@ public class SuperKanbanService {
 
         SuperKanbanToDo superKanbanToDo = new SuperKanbanToDo();
         superKanbanToDo.restoreStateMemento(memento);
-
 
         switch (memento.operationEvent()) {
             case CREATE:
