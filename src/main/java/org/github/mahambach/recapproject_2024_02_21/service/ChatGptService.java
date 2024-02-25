@@ -20,7 +20,7 @@ public class ChatGptService {
     }
 
     public String spellCheck(String text){
-        ChatGptRequest request = new ChatGptRequest("Bitte korrigiere Rechtschreibung und Grammatik und gib nur den Korrekten Text ohne zusätzliche Satzzeichen zurück: " + text);
+        ChatGptRequest request = new ChatGptRequest("Bitte korrigiere Rechtschreibung und Grammatik im nachfolgenden Text und gib nur diesen, ohne zusätzliche Satzzeichen, zurück: " + text);
         return postPrompt(request);
     }
 
