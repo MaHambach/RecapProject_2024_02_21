@@ -3,6 +3,7 @@ package org.github.mahambach.recapproject_2024_02_21.controller;
 import lombok.RequiredArgsConstructor;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDo;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoDTO;
+import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoMemento;
 import org.github.mahambach.recapproject_2024_02_21.service.SuperKanbanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -42,12 +43,12 @@ public class SuperKanbanController {
     }
 
     @PostMapping("/undo")
-    public SuperKanbanToDo undo(){
+    public SuperKanbanToDoMemento undo(){
         return superKanbanService.undo();
     }
 
     @PostMapping("/redo")
-    public SuperKanbanToDo redo(){
+    public SuperKanbanToDoMemento redo(){
         return superKanbanService.redo();
     }
 }

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.github.mahambach.recapproject_2024_02_21.exception.NoSuchToDoFound;
 import org.github.mahambach.recapproject_2024_02_21.model.OperationEvent;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDo;
-import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoDTO;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoMemento;
 import org.github.mahambach.recapproject_2024_02_21.service.CareTakerService;
 import org.springframework.stereotype.Repository;
@@ -43,6 +42,7 @@ public class SuperKanbanRepo {
         }
         for (SuperKanbanToDo superKanbanToDo : toDoList) {
             if (superKanbanToDo.getId().equals(id)) {
+                careTakerService.add(superKanbanToDo.saveStateMemento(OperationEvent.UPDATE));
                 careTakerService.add(toDo.saveStateMemento(OperationEvent.UPDATE));
                 superKanbanToDo.setDescription(toDo.getDescription());
                 superKanbanToDo.setStatus(toDo.getStatus());
@@ -63,10 +63,13 @@ public class SuperKanbanRepo {
         throw new NoSuchToDoFound(id);
     }
 
-    public SuperKanbanToDo undo() {
+    public SuperKanbanToDoMemento undo() {
         SuperKanbanToDoMemento memento = careTakerService.undo();
+        if(memento.operationEvent().equals(OperationEvent.UPDATE)) memento = careTakerService.undo();
+
         SuperKanbanToDo superKanbanToDo = new SuperKanbanToDo();
         superKanbanToDo.restoreStateMemento(memento);
+
 
         switch (memento.operationEvent()) {
             case CREATE:
@@ -85,13 +88,16 @@ public class SuperKanbanRepo {
                 toDoList.add(superKanbanToDo);
                 break;
         }
-        return superKanbanToDo;
+        return memento;
     }
 
-    public SuperKanbanToDo redo() {
+    public SuperKanbanToDoMemento redo() {
         SuperKanbanToDoMemento memento = careTakerService.redo();
+        if(memento.operationEvent().equals(OperationEvent.UPDATE)) memento = careTakerService.redo();
+
         SuperKanbanToDo superKanbanToDo = new SuperKanbanToDo();
         superKanbanToDo.restoreStateMemento(memento);
+
 
         switch (memento.operationEvent()) {
             case CREATE:
@@ -111,6 +117,6 @@ public class SuperKanbanRepo {
                 break;
         }
 
-        return superKanbanToDo;
+        return memento;
     }
 }

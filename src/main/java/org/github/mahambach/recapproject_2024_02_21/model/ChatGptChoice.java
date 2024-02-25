@@ -16,6 +16,5 @@ public class ChatGptChoice {
      *     }
      * }
      */
-
     private ChatGptMessage message;
 }
