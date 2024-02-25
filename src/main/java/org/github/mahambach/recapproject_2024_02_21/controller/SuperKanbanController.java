@@ -47,8 +47,8 @@ public class SuperKanbanController {
         return superKanbanService.undo();
     }
 
-//    @PostMapping("/redo")
-//    public SuperKanbanToDoMemento redo(){
-//        return superKanbanService.redo();
-//    }
+    @PostMapping("/redo")
+    public SuperKanbanToDoMemento redo(){
+        return superKanbanService.redo();
+    }
 }
