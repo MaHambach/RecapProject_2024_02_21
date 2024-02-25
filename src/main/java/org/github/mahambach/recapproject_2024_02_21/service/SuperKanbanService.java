@@ -2,6 +2,7 @@ package org.github.mahambach.recapproject_2024_02_21.service;
 
 import lombok.RequiredArgsConstructor;
 import org.github.mahambach.recapproject_2024_02_21.exception.NoSuchToDoFound;
+import org.github.mahambach.recapproject_2024_02_21.model.OperationEvent;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDo;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoDTO;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoMemento;
@@ -44,11 +45,68 @@ public class SuperKanbanService {
     }
 
 
-    public SuperKanbanToDoMemento undo() {
-        return this.superKanbanRepo.undo();
-    }
+//    public SuperKanbanToDoMemento undo() {
+//        return this.superKanbanRepo.undo();
+//    }
+//
+//    public SuperKanbanToDoMemento redo() {
+//        return this.superKanbanRepo.redo();
+//    }
 
-    public SuperKanbanToDoMemento redo() {
-        return this.superKanbanRepo.redo();
-    }
+//    public SuperKanbanToDoMemento undo() {
+//        SuperKanbanToDoMemento memento = careTakerService.undo();
+//        if(memento.operationEvent().equals(OperationEvent.UPDATE)) memento = careTakerService.undo();
+//
+//        SuperKanbanToDo superKanbanToDo = new SuperKanbanToDo();
+//        superKanbanToDo.restoreStateMemento(memento);
+//
+//
+//        switch (memento.operationEvent()) {
+//            case CREATE:
+//                toDoList.remove(superKanbanToDo);
+//                break;
+//            case UPDATE:
+//                for (SuperKanbanToDo toDo : toDoList) {
+//                    if (toDo.getId().equals(superKanbanToDo.getId())) {
+//                        toDoList.remove(toDo);
+//                        toDoList.add(superKanbanToDo);
+//                        break;
+//                    }
+//                }
+//                break;
+//            case DELETE:
+//                toDoList.add(superKanbanToDo);
+//                break;
+//        }
+//        return memento;
+//    }
+//
+//    public SuperKanbanToDoMemento redo() {
+//        SuperKanbanToDoMemento memento = careTakerService.redo();
+//        if(memento.operationEvent().equals(OperationEvent.UPDATE)) memento = careTakerService.redo();
+//
+//        SuperKanbanToDo superKanbanToDo = new SuperKanbanToDo();
+//        superKanbanToDo.restoreStateMemento(memento);
+//
+//
+//        switch (memento.operationEvent()) {
+//            case CREATE:
+//                toDoList.add(superKanbanToDo);
+//                break;
+//            case UPDATE:
+//                for (SuperKanbanToDo toDo : toDoList) {
+//                    if (toDo.getId().equals(superKanbanToDo.getId())) {
+//                        toDoList.remove(toDo);
+//                        toDoList.add(superKanbanToDo);
+//                        break;
+//                    }
+//                }
+//                break;
+//            case DELETE:
+//                toDoList.remove(superKanbanToDo);
+//                break;
+//        }
+//
+//        return memento;
+//    }
 }
