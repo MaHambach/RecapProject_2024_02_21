@@ -1,6 +1,7 @@
 package org.github.mahambach.recapproject_2024_02_21.service;
 
 import lombok.RequiredArgsConstructor;
+import org.github.mahambach.recapproject_2024_02_21.exception.NoSuchToDoFound;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDo;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoDTO;
 import org.github.mahambach.recapproject_2024_02_21.model.SuperKanbanToDoMemento;
@@ -17,24 +18,29 @@ public class SuperKanbanService {
     private final IdService idService;
 
     public List<SuperKanbanToDo> getAllToDos() {
-        return this.superKanbanRepo.getAllToDos();
+        return this.superKanbanRepo.findAll();
     }
 
     public SuperKanbanToDo getToDoById(String id) {
-        return this.superKanbanRepo.getToDoById(id);
+        return this.superKanbanRepo.findById(id).orElseThrow(() -> new NoSuchToDoFound(id));
     }
 
     public SuperKanbanToDo createToDo(SuperKanbanToDoDTO toDoDTO) {
         //return this.superKanbanRepo.createToDo(new SuperKanbanToDo(idService.generateId(), chatGptService.spellCheck(toDoDTO.getDescription()), toDoDTO.getStatus()));  // Entfernt, da es in Zukunft, wenn der Key nicht länger funktioniert, probleme geben könnte.
-        return this.superKanbanRepo.createToDo(new SuperKanbanToDo(idService.generateId(), toDoDTO.getDescription(), toDoDTO.getStatus()));
+        return this.superKanbanRepo.save(new SuperKanbanToDo(idService.generateId(), toDoDTO.getDescription(), toDoDTO.getStatus()));
     }
 
     public SuperKanbanToDo updateToDo(String id, SuperKanbanToDo toDo) {
-        return this.superKanbanRepo.updateToDo(id, toDo); //Bewusste Entscheidung gegen einen Rechtschreib- und Grammatik-Check durch ChatGPT um den Benutzer die Möglichkeit zu geben Fehler von ChatGPT zu korrigieren.
+        if(!id.equals(toDo.getId())) {
+            throw new IllegalArgumentException("The id in the path and the id in the body do not match.");
+        }
+        return this.superKanbanRepo.save(toDo); //Bewusste Entscheidung gegen einen Rechtschreib- und Grammatik-Check durch ChatGPT um den Benutzer die Möglichkeit zu geben Fehler von ChatGPT zu korrigieren.
     }
 
     public SuperKanbanToDo deleteToDo(String id) {
-        return this.superKanbanRepo.deleteToDo(id);
+        SuperKanbanToDo toDo = this.superKanbanRepo.findById(id).orElseThrow(() -> new NoSuchToDoFound(id));
+        this.superKanbanRepo.deleteById(id);
+        return toDo;
     }
 
 
