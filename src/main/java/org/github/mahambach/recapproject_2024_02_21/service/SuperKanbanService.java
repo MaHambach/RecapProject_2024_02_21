@@ -69,6 +69,8 @@ public class SuperKanbanService {
                 break;
             case DELETE:
                 this.superKanbanRepo.save(superKanbanToDo); // Wir müssen hier die neue creatToDo-Methode umgehen, da diese dem superKanbanToDo eine neue ID zuweisen würde.
+                this.careTakerService.add(superKanbanToDo.saveStateMemento(OperationEvent.CREATE));
+
                 break;
         }
         return memento;
@@ -84,6 +86,8 @@ public class SuperKanbanService {
         switch (memento.operationEvent()) {
             case CREATE:
                 this.superKanbanRepo.save(superKanbanToDo); // Wir müssen hier die neue creatToDo-Methode umgehen, da diese dem superKanbanToDo eine neue ID zuweisen würde.
+                this.careTakerService.add(superKanbanToDo.saveStateMemento(OperationEvent.CREATE));
+
                 break;
             case UPDATE:
                 updateToDo(superKanbanToDo.getId(), superKanbanToDo);
