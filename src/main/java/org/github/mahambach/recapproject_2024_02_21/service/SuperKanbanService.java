@@ -17,6 +17,7 @@ public class SuperKanbanService {
     private final SuperKanbanRepo superKanbanRepo;
     //private final ChatGptService chatGptService; // Entfernt, da es in Zukunft, wenn der Key nicht länger funktioniert, probleme geben könnte.
     private final IdService idService;
+    private final CareTakerService careTakerService;
 
     public List<SuperKanbanToDo> getAllToDos() {
         return this.superKanbanRepo.findAll();
@@ -45,44 +46,29 @@ public class SuperKanbanService {
     }
 
 
-//    public SuperKanbanToDoMemento undo() {
-//        return this.superKanbanRepo.undo();
-//    }
-//
-//    public SuperKanbanToDoMemento redo() {
-//        return this.superKanbanRepo.redo();
-//    }
+    public SuperKanbanToDoMemento undo() {
+        SuperKanbanToDoMemento memento = careTakerService.undo();
+        if(memento.operationEvent().equals(OperationEvent.UPDATE)) memento = careTakerService.undo();
 
-//    public SuperKanbanToDoMemento undo() {
-//        SuperKanbanToDoMemento memento = careTakerService.undo();
-//        if(memento.operationEvent().equals(OperationEvent.UPDATE)) memento = careTakerService.undo();
-//
-//        SuperKanbanToDo superKanbanToDo = new SuperKanbanToDo();
-//        superKanbanToDo.restoreStateMemento(memento);
-//
-//
-//        switch (memento.operationEvent()) {
-//            case CREATE:
-//                toDoList.remove(superKanbanToDo);
-//                break;
-//            case UPDATE:
-//                for (SuperKanbanToDo toDo : toDoList) {
-//                    if (toDo.getId().equals(superKanbanToDo.getId())) {
-//                        toDoList.remove(toDo);
-//                        toDoList.add(superKanbanToDo);
-//                        break;
-//                    }
-//                }
-//                break;
-//            case DELETE:
-//                toDoList.add(superKanbanToDo);
-//                break;
-//        }
-//        return memento;
-//    }
-//
-//    public SuperKanbanToDoMemento redo() {
-//        SuperKanbanToDoMemento memento = careTakerService.redo();
+        SuperKanbanToDo superKanbanToDo = new SuperKanbanToDo();
+        superKanbanToDo.restoreStateMemento(memento);
+
+
+        switch (memento.operationEvent()) {
+            case CREATE:
+                deleteToDo(superKanbanToDo.getId());
+                break;
+            case UPDATE:
+                updateToDo(superKanbanToDo.getId(), superKanbanToDo);
+                break;
+            case DELETE:
+                this.superKanbanRepo.save(superKanbanToDo); // Wir müssen hier die neue creatToDo-Methode umgehen, da diese dem superKanbanToDo eine neue ID zuweisen würde.
+                break;
+        }
+        return memento;
+    }
+
+//    public SuperKanbanToDoMemento redo() {SuperKanbanToDoMemento memento = careTakerService.redo();
 //        if(memento.operationEvent().equals(OperationEvent.UPDATE)) memento = careTakerService.redo();
 //
 //        SuperKanbanToDo superKanbanToDo = new SuperKanbanToDo();
@@ -109,4 +95,5 @@ public class SuperKanbanService {
 //
 //        return memento;
 //    }
+
 }

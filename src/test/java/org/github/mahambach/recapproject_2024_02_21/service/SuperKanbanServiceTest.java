@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SuperKanbanServiceTest {
     private final SuperKanbanRepo mockSuperKanbanRepo = mock(SuperKanbanRepo.class);
     private final IdService mockIdService = mock(IdService.class);
-    private final ChatGptService mockChatGptService = mock(ChatGptService.class);
+    private final CareTakerService careTakerService = mock(CareTakerService.class);
 
     @Test
     void testGetAllToDos_whenEmpty_thenEmpty() {
@@ -26,7 +26,7 @@ class SuperKanbanServiceTest {
         when(mockSuperKanbanRepo.findAll()).thenReturn(new ArrayList<>());
 
         // when
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
 
         // then
         assertEquals(expected, superKanbanService.getAllToDos());
@@ -45,7 +45,7 @@ class SuperKanbanServiceTest {
         when(mockSuperKanbanRepo.findAll()).thenReturn(expected);
 
         // when
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
 
         // then
         assertEquals(expected, superKanbanService.getAllToDos());
@@ -60,7 +60,7 @@ class SuperKanbanServiceTest {
         when(mockSuperKanbanRepo.findById("1")).thenReturn(Optional.of(expected));
 
         // when
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
 
         // then
         assertEquals(expected, superKanbanService.getToDoById("1"));
@@ -75,9 +75,8 @@ class SuperKanbanServiceTest {
         SuperKanbanToDo expected = new SuperKanbanToDo("1", "Description 1", "status1");
         when(mockSuperKanbanRepo.save(any(SuperKanbanToDo.class))).thenReturn(expected);
         when(mockIdService.generateId()).thenReturn("1");
-        when(mockChatGptService.spellCheck("description1")).thenReturn("Description 1");
         // when
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
 
         // then
         assertEquals(expected, superKanbanService.createToDo(toDoDTO));
@@ -92,9 +91,8 @@ class SuperKanbanServiceTest {
         SuperKanbanToDo expected = new SuperKanbanToDo("1", "Description 1", "status1");
         when(mockSuperKanbanRepo.save(expected)).thenReturn(expected);
         when(mockIdService.generateId()).thenReturn("1");
-        when(mockChatGptService.spellCheck("description1")).thenThrow(new NoChatGptResponse("Error: No response given by ChatGPT."));
         // when
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
 
         // then
         assertThrows(NoChatGptResponse.class, () -> superKanbanService.createToDo(toDoDTO));
@@ -108,7 +106,7 @@ class SuperKanbanServiceTest {
         SuperKanbanToDo expected = new SuperKanbanToDo("1", "description1", "status1");
         when(mockSuperKanbanRepo.save(toDo)).thenReturn(expected);
         // when
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
 
         // then
         assertEquals(expected, superKanbanService.updateToDo("1", toDo));
@@ -121,7 +119,7 @@ class SuperKanbanServiceTest {
         SuperKanbanToDo toDo = new SuperKanbanToDo("1", "description1", "status1");
         when(mockSuperKanbanRepo.save(toDo)).thenThrow(new NoSuchToDoFound("1"));
         // When
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
         // Then
         assertThrows(NoSuchToDoFound.class, () -> superKanbanService.updateToDo("1", toDo));
         verify(mockSuperKanbanRepo, times(1)).save(toDo);
@@ -133,7 +131,7 @@ class SuperKanbanServiceTest {
         SuperKanbanToDo toDo = new SuperKanbanToDo("2", "description1", "status1");
         when(mockSuperKanbanRepo.save( toDo)).thenThrow(new IllegalArgumentException("Id in path '1' and id in body '2' do not match!"));
         // When
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
         // Then
         assertThrows(IllegalArgumentException.class, () -> superKanbanService.updateToDo("1", toDo));
         verify(mockSuperKanbanRepo, times(1)).save( toDo);
@@ -146,7 +144,7 @@ class SuperKanbanServiceTest {
         SuperKanbanToDo expected = new SuperKanbanToDo("1", "description1", "status1");
         when(mockSuperKanbanRepo.findById("1")).thenReturn(Optional.of(expected));
         // when
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
 
         // then
         assertEquals(expected, superKanbanService.deleteToDo("1"));
@@ -159,7 +157,7 @@ class SuperKanbanServiceTest {
         when(mockSuperKanbanRepo.findById("1")).thenThrow(new NoSuchToDoFound("1"));
 
         // When
-        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService);
+        SuperKanbanService superKanbanService = new SuperKanbanService(mockSuperKanbanRepo, mockIdService, careTakerService);
         // Then
         assertThrows(NoSuchToDoFound.class, () -> superKanbanService.deleteToDo("1"));
         verify(mockSuperKanbanRepo, times(1)).deleteById("1");
